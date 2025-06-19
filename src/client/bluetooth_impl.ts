@@ -4,13 +4,17 @@ import { ConnectResult } from "../packets";
 import { Utils } from "../utils";
 import { modelsLibrary } from "../printer_models";
 
-const getAllModelFirstLetters = (): string[] => [...new Set(modelsLibrary.map((m) => m.model[0]))];
+const getAllModelFirstLetters = (): string[] => [
+  ...new Set(modelsLibrary.map((m) => m.model[0])),
+];
 
 /**
  * @category Client
  */
 export class BleDefaultConfiguration {
-  public static readonly SERVICES: string[] = ["e7810a71-73ae-499d-8c15-faa9aef0c3f2"];
+  public static readonly SERVICES: string[] = [
+    "e7810a71-73ae-499d-8c15-faa9aef0c3f2",
+  ];
   public static readonly NAME_FILTERS: BluetoothLEScanFilter[] = [
     ...getAllModelFirstLetters().map((l) => ({ namePrefix: l })),
   ];
@@ -40,11 +44,15 @@ export class NiimbotBluetoothClient extends NiimbotAbstractClient {
     const options: RequestDeviceOptions = {
       filters: [
         ...BleDefaultConfiguration.NAME_FILTERS,
-        { services: this.serviceUuidFilter ?? BleDefaultConfiguration.SERVICES },
+        {
+          services: this.serviceUuidFilter ?? BleDefaultConfiguration.SERVICES,
+        },
       ],
     };
 
-    const device: BluetoothDevice = await navigator.bluetooth.requestDevice(options);
+    const device: BluetoothDevice = await navigator.bluetooth.requestDevice(
+      options
+    );
 
     if (device.gatt === undefined) {
       throw new Error("Device has no Bluetooth Generic Attribute Profile");
@@ -62,9 +70,8 @@ export class NiimbotBluetoothClient extends NiimbotAbstractClient {
 
     const gattServer: BluetoothRemoteGATTServer = await device.gatt.connect();
 
-    const channel: BluetoothRemoteGATTCharacteristic | undefined = await this.findSuitableBluetoothCharacteristic(
-      gattServer
-    );
+    const channel: BluetoothRemoteGATTCharacteristic | undefined =
+      await this.findSuitableBluetoothCharacteristic(gattServer);
 
     if (channel === undefined) {
       gattServer.disconnect();
@@ -104,14 +111,16 @@ export class NiimbotBluetoothClient extends NiimbotAbstractClient {
   private async findSuitableBluetoothCharacteristic(
     gattServer: BluetoothRemoteGATTServer
   ): Promise<BluetoothRemoteGATTCharacteristic | undefined> {
-    const services: BluetoothRemoteGATTService[] = await gattServer.getPrimaryServices();
+    const services: BluetoothRemoteGATTService[] =
+      await gattServer.getPrimaryServices();
 
     for (const service of services) {
       if (service.uuid.length < 5) {
         continue;
       }
 
-      const characteristics: BluetoothRemoteGATTCharacteristic[] = await service.getCharacteristics();
+      const characteristics: BluetoothRemoteGATTCharacteristic[] =
+        await service.getCharacteristics();
 
       for (const c of characteristics) {
         if (c.properties.notify && c.properties.writeWithoutResponse) {

@@ -29,7 +29,7 @@ const repaint = () => {
   // draw diagonal line
   ctx.beginPath();
   ctx.moveTo(0, ctx.lineWidth / 2);
-  ctx.lineTo(canvas.width, canvas.height-ctx.lineWidth / 2);
+  ctx.lineTo(canvas.width, canvas.height - ctx.lineWidth / 2);
   ctx.stroke();
 
   // draw border
@@ -42,7 +42,6 @@ const logger = (text) => {
   logPane.innerText += text + "\n";
   logPane.scrollTop = logPane.scrollHeight;
 };
-
 
 /** Instantiate client */
 const newClient = (transport) => {
@@ -57,11 +56,19 @@ const newClient = (transport) => {
   }
 
   client.on("packetsent", (e) => {
-    logger(`>> ${Utils.bufToHex(e.packet.toBytes())} (${RequestCommandId[e.packet.command]})`);
+    logger(
+      `>> ${Utils.bufToHex(e.packet.toBytes())} (${
+        RequestCommandId[e.packet.command]
+      })`
+    );
   });
 
   client.on("packetreceived", (e) => {
-    logger(`<< ${Utils.bufToHex(e.packet.toBytes())} (${ResponseCommandId[e.packet.command]})`);
+    logger(
+      `<< ${Utils.bufToHex(e.packet.toBytes())} (${
+        ResponseCommandId[e.packet.command]
+      })`
+    );
   });
 
   client.on("connect", () => {
@@ -81,7 +88,9 @@ const newClient = (transport) => {
   });
 
   client.on("printprogress", (e) => {
-    logger(`Page ${e.page}/${e.pagesTotal}, Page print ${e.pagePrintProgress}%, Page feed ${e.pageFeedProgress}%`);
+    logger(
+      `Page ${e.page}/${e.pagesTotal}, Page print ${e.pagePrintProgress}%, Page feed ${e.pageFeedProgress}%`
+    );
   });
 };
 
@@ -89,7 +98,7 @@ const newClient = (transport) => {
 disconnectButton.onclick = () => {
   client.disconnect();
   client = null;
-}
+};
 
 /** On "Connect BLE" clicked */
 bleConnectButton.onclick = async () => {
@@ -116,7 +125,8 @@ serialConnectButton.onclick = async () => {
 /** On "Print" clicked */
 printButton.onclick = async () => {
   /** left or top */
-  const printDirection = "left";
+  // const printDirection = "left";
+  const printDirection = "top";
   const quantity = 1;
 
   /** Convert image to black and white bits */
