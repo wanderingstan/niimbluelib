@@ -44,6 +44,18 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
   private serviceUUID?: string;
   private characteristicUUID?: string;
 
+  public getDeviceId(): string | undefined {
+    return this.deviceId;
+  }
+
+  public getServiceUUID(): string | undefined {
+    return this.serviceUUID;
+  }
+
+  public getCharacteristicUUID(): string | undefined {
+    return this.characteristicUUID;
+  }
+
   public async connect(
     options?: NiimbotCapacitorBleClientConnectOptions
   ): Promise<ConnectionInfo> {
@@ -65,11 +77,11 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
         name: options.deviceId,
       };
     } else {
-      device = await BleClient.requestDevice();
-      // device = await BleClient.requestDevice({
-      //   namePrefix: options?.namePrefix,
-      //   services: options?.services ?? BleDefaultConfiguration.SERVICES,
-      // });
+      // device = await BleClient.requestDevice();
+      device = await BleClient.requestDevice({
+        namePrefix: options?.namePrefix,
+        services: options?.services ?? BleDefaultConfiguration.SERVICES,
+      });
     }
 
     await BleClient.connect(device.deviceId, () => this.onBleDisconnect());
