@@ -2,12 +2,7 @@ import { ConnectEvent, DisconnectEvent, RawPacketSentEvent } from "../events";
 import { ConnectionInfo, NiimbotAbstractClient } from ".";
 import { ConnectResult } from "../packets";
 import { Utils } from "../utils";
-import {
-  BleCharacteristic,
-  BleClient,
-  BleDevice,
-  BleService,
-} from "@capacitor-community/bluetooth-le";
+import { BleCharacteristic, BleClient, BleDevice, BleService } from "@capacitor-community/bluetooth-le";
 import { BleDefaultConfiguration } from "./bluetooth_impl";
 
 /**
@@ -56,9 +51,7 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
     return this.characteristicUUID;
   }
 
-  public async connect(
-    options?: NiimbotCapacitorBleClientConnectOptions
-  ): Promise<ConnectionInfo> {
+  public async connect(options?: NiimbotCapacitorBleClientConnectOptions): Promise<ConnectionInfo> {
     await this.disconnect();
 
     await BleClient.initialize({ androidNeverForLocation: true });
@@ -88,9 +81,9 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
 
     await BleClient.discoverServices(device.deviceId);
 
-    const { service, characteristic } = await this.findSuitableCharacteristic(
-      device.deviceId
-    ).finally(() => this.onBleDisconnect());
+    const { service, characteristic } = await this.findSuitableCharacteristic(device.deviceId).finally(() =>
+      this.onBleDisconnect()
+    );
 
     this.deviceId = device.deviceId;
     this.serviceUUID = service;
@@ -100,14 +93,9 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
       console.log("Suitable channel found:", { service, characteristic });
     }
 
-    await BleClient.startNotifications(
-      this.deviceId,
-      this.serviceUUID,
-      this.characteristicUUID,
-      (value: DataView) => {
-        this.processRawPacket(value);
-      }
-    );
+    await BleClient.startNotifications(this.deviceId, this.serviceUUID, this.characteristicUUID, (value: DataView) => {
+      this.processRawPacket(value);
+    });
 
     try {
       await this.initialNegotiate();
@@ -127,9 +115,7 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
     return result;
   }
 
-  private async findSuitableCharacteristic(
-    devId: string
-  ): Promise<{ service: string; characteristic: string }> {
+  private async findSuitableCharacteristic(devId: string): Promise<{ service: string; characteristic: string }> {
     const services: BleService[] = await BleClient.getServices(devId);
 
     for (const service of services) {
@@ -166,11 +152,7 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
   public async disconnect() {
     this.stopHeartbeat();
     if (this.deviceId !== undefined) {
-      await BleClient.stopNotifications(
-        this.deviceId,
-        this.serviceUUID!,
-        this.characteristicUUID!
-      );
+      await BleClient.stopNotifications(this.deviceId, this.serviceUUID!, this.characteristicUUID!);
       await BleClient.disconnect(this.deviceId);
     }
     this.deviceId = undefined;
@@ -185,12 +167,7 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
       await Utils.sleep(this.packetIntervalMs);
 
       const dw = new DataView(data.buffer, data.byteOffset, data.byteLength);
-      await BleClient.writeWithoutResponse(
-        this.deviceId!,
-        this.serviceUUID!,
-        this.characteristicUUID!,
-        dw
-      );
+      await BleClient.writeWithoutResponse(this.deviceId!, this.serviceUUID!, this.characteristicUUID!, dw);
 
       this.emit("rawpacketsent", new RawPacketSentEvent(data));
     };
