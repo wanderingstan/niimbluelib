@@ -69,10 +69,13 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
         deviceId: options.deviceId,
         name: options.deviceId,
       };
+      await BleClient.getDevices([options.deviceId]);
     } else {
       device = await BleClient.requestDevice({
-        namePrefix: options?.namePrefix,
-        services: options?.services ?? BleDefaultConfiguration.SERVICES,
+        ...(options?.namePrefix && { namePrefix: options.namePrefix }),
+        ...(options?.services && { services: options.services }),
+        // services: options?.services ?? BleDefaultConfiguration.SERVICES,
+        // services: ["e7810a71-73ae-499d-8c15-faa9aef0c3f2"],
       });
     }
 
