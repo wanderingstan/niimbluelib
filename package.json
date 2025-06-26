@@ -1,5 +1,5 @@
 {
-  "name": "@wanderingstan/niimbluelib",
+  "name": "@mmote/niimbluelib",
   "version": "0.0.2-alpha.27",
   "description": "Library for the communication with NIIMBOT printers",
   "keywords": [
