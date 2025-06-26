@@ -70,7 +70,6 @@ export class NiimbotCapacitorBleClient extends NiimbotAbstractClient {
         name: options.deviceId,
       };
     } else {
-      // device = await BleClient.requestDevice();
       device = await BleClient.requestDevice({
         namePrefix: options?.namePrefix,
         services: options?.services ?? BleDefaultConfiguration.SERVICES,
